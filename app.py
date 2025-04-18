@@ -264,12 +264,19 @@ def process_auth_code():
     if st.session_state.auth_code:
         try:
             print(f"Processing auth code: {st.session_state.auth_code[:10]}...")
+            # Dynamically determine the redirect_uri based on the current domain
+            import urllib.parse
+            current_url = st.experimental_get_url()
+            parsed_url = urllib.parse.urlparse(current_url)
+            redirect_uri = f"{parsed_url.scheme}://{parsed_url.netloc}"
+            print(f"Using redirect_uri: {redirect_uri}")
+            
             # Create the flow using the client config from secrets
             client_config = get_oauth_client_config()
             flow = Flow.from_client_config(
                 client_config,
                 scopes=OAUTH_SCOPES,
-                redirect_uri='http://localhost:8501'
+                redirect_uri=redirect_uri
             )
             print("Flow created successfully.")
             
