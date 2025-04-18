@@ -361,10 +361,14 @@ def main():
             if st.button("Login with Google"):
                 # Create the flow using the client config from secrets
                 client_config = get_oauth_client_config()
+                import urllib.parse
+                current_url = st.experimental_get_url()
+                parsed_url = urllib.parse.urlparse(current_url)
+                redirect_uri = f"{parsed_url.scheme}://{parsed_url.netloc}"
                 flow = Flow.from_client_config(
                     client_config,
                     scopes=OAUTH_SCOPES,
-                    redirect_uri='http://localhost:8501'
+                    redirect_uri=redirect_uri
                 )
                 
                 # Generate the authorization URL
