@@ -161,8 +161,16 @@ def fetch_student_grades(student_id):
         if all_grades is None:
             return None
         
-        # Find the row with the matching student ID
-        student_row = all_grades[all_grades['ID'] == student_id]
+        # Convert ID column to string to ensure string operations work
+        all_grades['ID'] = all_grades['ID'].astype(str)
+        
+        # Find the row with the matching student ID using contains instead of exact match
+        # This will match if the student_id is contained anywhere in the ID field
+        student_row = all_grades[all_grades['ID'].str.contains(str(student_id), case=False, na=False)]
+        
+        # If no match found, try with startswith as an alternative
+        if student_row.empty:
+            student_row = all_grades[all_grades['ID'].str.startswith(str(student_id), na=False)]
         
         if student_row.empty:
             st.error(f"No records found for student ID: {student_id}")
